@@ -12,6 +12,9 @@ interface RichTextProps {
   tagOverrides: Record<string, (props: TagComponentProps) => ReactNode>;
 }
 
+/**
+ * Transform encoded string to legit React children, string decode happens by calling overwrite functions for each encoded tag
+ */
 export const RichText: FC<RichTextProps> = ({
   text,
   className,

@@ -4,16 +4,10 @@ import { AppConfig } from 'next-intl';
 import { cookies } from 'next/headers';
 
 import 'app/styles/index.css';
-import {
-  ACCESS_TOKEN_COOKIE_NAME,
-  THEME_ATTRIBUTE_NAME,
-  THEME_COOKIE_NAME,
-  Theme,
-} from 'shared/config';
-import { AuthProvider, IntlProvider, ThemeProvider } from 'app/providers';
+import { IntlProvider, ThemeProvider } from 'app/providers';
+import { THEME_ATTRIBUTE_NAME, THEME_COOKIE_NAME, Theme } from 'shared/config';
 import { RoutingDefaultParams } from 'shared/types';
 import { clsx } from 'shared/lib';
-import { getUserClaims } from 'features/auth';
 
 type RootLayoutProps = PropsWithChildren<{
   params: Promise<RoutingDefaultParams>;
@@ -36,15 +30,9 @@ const PTSerif = PT_Serif({
 const Providers: FC<
   PropsWithChildren & { locale: AppConfig['Locale'] }
 > = async ({ locale, children }) => {
-  const cookie = await cookies();
-  const jwtToken = cookie.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-  const userClaims = jwtToken ? await getUserClaims(jwtToken) : null;
-
   return (
     <IntlProvider locale={locale}>
-      <AuthProvider user={userClaims}>
-        <ThemeProvider>{children}</ThemeProvider>
-      </AuthProvider>
+      <ThemeProvider>{children}</ThemeProvider>
     </IntlProvider>
   );
 };

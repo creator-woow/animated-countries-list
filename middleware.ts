@@ -1,12 +1,7 @@
 import { MiddlewareConfig, NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 
-import {
-  DISABLE_AUTH_REQUIREMENT,
-  LOCALE_PREFIX,
-  SUPPORTED_LOCALES,
-} from 'shared/config';
-import { authMiddleware } from 'features/auth';
+import { LOCALE_PREFIX, SUPPORTED_LOCALES } from 'shared/config';
 
 const intlMiddleware = createIntlMiddleware({
   locales: SUPPORTED_LOCALES,
@@ -15,10 +10,7 @@ const intlMiddleware = createIntlMiddleware({
 });
 
 export const middleware = async (req: NextRequest) => {
-  const authVerifiedReq = DISABLE_AUTH_REQUIREMENT
-    ? req
-    : await authMiddleware(req);
-  return intlMiddleware(authVerifiedReq);
+  return intlMiddleware(req);
 };
 
 export const config: MiddlewareConfig = {
