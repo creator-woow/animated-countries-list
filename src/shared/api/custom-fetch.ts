@@ -1,7 +1,5 @@
-import { ACCESS_TOKEN_HEADER_NAME, API_URL } from 'shared/config';
+import { API_URL } from 'shared/config';
 import { cleanObject } from 'shared/lib';
-
-import { readAuthToken } from './read-auth-token';
 
 export interface ListFetchResponse<T> {
   count: number;
@@ -11,7 +9,10 @@ export interface ListFetchResponse<T> {
 }
 
 interface CustomFetchOptions extends RequestInit {
+  // Field of object will be added as query params for request
   query?: Record<string, unknown>;
+  // Fields of object replace url segments where substring has format :<field_name>
+  params?: Record<string, unknown>;
 }
 
 type CustomFetchResponse<TData = unknown, TErrorBody = unknown> =
@@ -31,8 +32,15 @@ export const customFetch = {
     url: string,
     options?: CustomFetchOptions,
   ): Promise<CustomFetchResponse<TResponse, TErrorBody>> {
-    const authToken = await readAuthToken();
     const isCustomOrigin = url.startsWith('https://');
+
+    let processedUrl = url;
+    if (options?.params) {
+      Object.entries(options.params).forEach(([key, value]) => {
+        const placeholder = `:${key}`;
+        processedUrl = processedUrl.replace(placeholder, String(value));
+      });
+    }
 
     const headers = new Headers({
       ...options?.headers,
@@ -41,10 +49,6 @@ export const customFetch = {
       }),
     });
 
-    if (authToken) {
-      headers.set(ACCESS_TOKEN_HEADER_NAME, `Bearer ${authToken}`);
-    }
-
     const cleanedQuery = options?.query ? cleanObject(options.query) : {};
 
     const searchParams = new URLSearchParams(
@@ -52,7 +56,11 @@ export const customFetch = {
     ).toString();
 
     const res = await fetch(
-      `${isCustomOrigin ? '' : API_URL}${url}${(url.includes('?') ? '&' : '?') + searchParams}`,
+      `${isCustomOrigin ? '' : API_URL}${processedUrl}${
+        searchParams
+          ? (processedUrl.includes('?') ? '&' : '?') + searchParams
+          : ''
+      }`,
       {
         ...options,
         headers,

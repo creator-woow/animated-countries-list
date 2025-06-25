@@ -18,8 +18,8 @@ export default getRequestConfig(async ({ locale, requestLocale }) => {
       common: {
         ...(await import(`public/messages/${activeLocale}/common.json`)),
       },
-      validation: {
-        ...(await import(`public/messages/${activeLocale}/validation.json`)),
+      countries: {
+        ...(await import(`public/messages/${activeLocale}/countries.json`)),
       },
     },
   };

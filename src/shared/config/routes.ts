@@ -1,11 +1,12 @@
 export const enum RouteParam {
-  WorkspaceId = ':workspaceId',
+  CountryCode = ':countryCode',
 }
 
 export const enum RoutePath {
   Login = '/login',
   Registration = '/registration',
-  WorkspaceProjects = `/${RouteParam.WorkspaceId}/projects`, // Example of RouteParam usage
+  Countries = '/countries',
+  Country = `/${RoutePath.Countries}/${RouteParam.CountryCode}`,
 }
 
 export const PUBLIC_ROUTES = [RoutePath.Registration, RoutePath.Login];

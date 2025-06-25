@@ -24,7 +24,6 @@ const nextConfig = {
       },
     ],
   },
-  allowedDevOrigins: ['webclient.just-kanban.orb.local'],
 };
 
 export default intlPlugin(nextConfig);

@@ -8,14 +8,18 @@ interface ImageProps {
   src?: string;
   alt?: string;
   priority?: boolean;
+  objectFit?: 'contain' | 'cover';
+  unoptimized?: boolean;
 }
 
 export const Image: FC<ImageProps> = ({
   className,
   alt = '',
   src = '',
+  objectFit = 'cover',
   height,
   priority,
+  unoptimized,
   width,
 }) => {
   return (
@@ -26,6 +30,8 @@ export const Image: FC<ImageProps> = ({
       height={height}
       width={width}
       priority={priority}
+      objectFit={objectFit}
+      unoptimized={unoptimized}
     />
   );
 };
