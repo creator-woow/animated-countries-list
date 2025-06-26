@@ -10,6 +10,7 @@ interface ImageProps {
   priority?: boolean;
   objectFit?: 'contain' | 'cover';
   unoptimized?: boolean;
+  onError?: () => void;
 }
 
 export const Image: FC<ImageProps> = ({
@@ -21,6 +22,7 @@ export const Image: FC<ImageProps> = ({
   priority,
   unoptimized,
   width,
+  onError,
 }) => {
   return (
     <NextImage
@@ -32,6 +34,7 @@ export const Image: FC<ImageProps> = ({
       priority={priority}
       objectFit={objectFit}
       unoptimized={unoptimized}
+      onError={onError}
     />
   );
 };

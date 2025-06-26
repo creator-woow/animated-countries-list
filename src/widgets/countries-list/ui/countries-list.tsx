@@ -1,23 +1,20 @@
 'use client';
 
+import { FC, useState } from 'react';
 import { AppConfig } from 'next-intl';
-import { FC } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-import {
-  Button,
-  Image,
-  Link,
-  VirtualList,
-  VirtualListAutoSizer,
-  VirtualListChildProps,
-} from 'shared/ui';
-import { RouteParam, RoutePath } from 'shared/config';
-import { Country, CountryFlag } from 'entities/country';
+import { VirtualList, VirtualListAutoSizer } from 'shared/ui';
+import { Country } from 'entities/country';
+import { clsx } from 'shared/lib';
 import { useDebouncedCallback } from 'shared/lib/hooks';
 
-import { LIST_ITEM_HEIGHT, SCROLL_INDEX_PARAM_NAME } from '../lib/const';
-import { clsx } from 'shared/lib';
+import {
+  DELETING_ANIMATION_DURATION_MILLISECONDS,
+  LIST_ITEM_HEIGHT,
+  SCROLL_INDEX_PARAM_NAME,
+} from '../lib/const';
+import { CountriesListElement } from './countries-list-element';
 
 interface CountriesListProps {
   className?: string;
@@ -25,75 +22,50 @@ interface CountriesListProps {
   messages: AppConfig['Messages']['countries'];
 }
 
-const CountriesListElement = ({
-  index,
-  data: countries,
-  messages,
-  style,
-}: VirtualListChildProps<Country[]> & {
-  messages: AppConfig['Messages']['countries'];
-  onDelete: (index: number) => void;
-}) => {
-  const country = countries[index];
-
-  return (
-    <li
-      key={country.iso_code3}
-      className="flex items-center gap-4 p-2 p-4 not-last:border-b border-gray-300"
-      style={style}
-    >
-      <CountryFlag
-        className="h-[30px]"
-        url={country.flag_url}
-        alt={country.name_ru}
-        width={50}
-        height={30}
-      />
-      <span className="truncate">{country.name_ru}</span>
-      <div className="ml-auto flex items-center gap-3">
-        <Button>{messages['delete']}</Button>
-        <Link
-          href={RoutePath.Country.replace(
-            RouteParam.CountryCode,
-            country.iso_code3,
-          )}
-        >
-          {messages['more-details']}
-        </Link>
-      </div>
-    </li>
-  );
-};
-
 export const CountriesList: FC<CountriesListProps> = ({
   className,
   messages,
-  countries,
+  countries: countriesProp,
 }) => {
   const searchParams = useSearchParams();
-  const initialVisibleIndex = +(
-    searchParams?.get(SCROLL_INDEX_PARAM_NAME) ?? 1
+  const [countries, setCountries] = useState(countriesProp);
+  const [deletingCountriesCodes, setDeletingCountriesCodes] = useState<
+    string[]
+  >([]);
+
+  const initialVisibleIndex = Number(
+    searchParams?.get(SCROLL_INDEX_PARAM_NAME) ?? 1,
   );
 
-  const saveVisibleIndex = (index: number) => {
+  const saveVisibleIndex = useDebouncedCallback((index: number) => {
     window.history.replaceState(
       null,
       '',
       `?${SCROLL_INDEX_PARAM_NAME}=${index}`,
     );
-  };
-
-  const debounceIndexSave = useDebouncedCallback(saveVisibleIndex, 200);
+  }, 200);
 
   const handleItemsRender = (firstVisibleIndex: number) => {
-    debounceIndexSave.cancel();
-    debounceIndexSave(firstVisibleIndex);
+    saveVisibleIndex(firstVisibleIndex);
   };
 
-  const handleDeleteItem = () => {};
+  const deleteItem = (countryCode: string) => {
+    setCountries((prev) => prev.filter((el) => el.iso_code3 !== countryCode));
+    setDeletingCountriesCodes((prev) =>
+      prev.filter((code) => code !== countryCode),
+    );
+  };
+
+  const startDeletingAnimations = (deletingCountryCode: string) => {
+    setDeletingCountriesCodes((prev) => [...prev, deletingCountryCode]);
+    setTimeout(
+      () => deleteItem(deletingCountryCode),
+      DELETING_ANIMATION_DURATION_MILLISECONDS,
+    );
+  };
 
   return (
-    <div className={clsx(className, 'w-full h-full border border-gray-300')}>
+    <div className={clsx(className, 'h-full w-full border overflow-x-hidden')}>
       <VirtualListAutoSizer>
         {({ width, height }) => (
           <ul>
@@ -105,18 +77,46 @@ export const CountriesList: FC<CountriesListProps> = ({
               width={width}
               itemKey={(index) => countries[index].iso_code3}
               initialScrollOffset={initialVisibleIndex * LIST_ITEM_HEIGHT}
-              overscanCount={5}
-              onItemsRendered={(props) =>
-                handleItemsRender(props.visibleStartIndex)
+              overscanCount={20}
+              useIsScrolling={false}
+              onItemsRendered={({ visibleStartIndex }) =>
+                handleItemsRender(visibleStartIndex)
               }
             >
-              {(props) => (
-                <CountriesListElement
-                  {...props}
-                  messages={messages}
-                  onDelete={handleDeleteItem}
-                />
-              )}
+              {(props) => {
+                const countryCode = props.data[props.index].iso_code3;
+                const isDeleting = deletingCountriesCodes.includes(countryCode);
+                const deletedIndexes = deletingCountriesCodes.map((code) =>
+                  countries.findIndex((el) => el.iso_code3 === code),
+                );
+                const isLastScreen =
+                  props.index >=
+                  countries.length - Math.ceil(height / LIST_ITEM_HEIGHT);
+                const isComingUp =
+                  !isLastScreen &&
+                  deletedIndexes.some(
+                    (deletedIndex) => props.index > deletedIndex,
+                  );
+                const isComingDown =
+                  isLastScreen &&
+                  deletedIndexes.some(
+                    (deletedIndex) => deletedIndex > props.index,
+                  );
+
+                return (
+                  <CountriesListElement
+                    {...props}
+                    key={countryCode}
+                    messages={messages}
+                    isDeleting={isDeleting}
+                    isComingUp={isComingUp}
+                    isComingDown={isComingDown}
+                    onStartDeleteAnimations={() =>
+                      startDeletingAnimations(countryCode)
+                    }
+                  />
+                );
+              }}
             </VirtualList>
           </ul>
         )}

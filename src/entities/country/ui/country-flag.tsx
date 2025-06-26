@@ -19,13 +19,13 @@ export const CountryFlag: FC<CountryFlagProps> = ({
 }) => {
   return (
     <Image
+      priority
+      unoptimized
       className={className}
       src={'https:' + url}
       alt={alt}
       width={width}
       height={height}
-      priority
-      unoptimized
     />
   );
 };
