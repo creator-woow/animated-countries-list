@@ -8,13 +8,13 @@ import { RouteParam, RoutePath } from 'shared/config';
 import { clsx } from 'shared/lib';
 
 import { DELETING_ANIMATION_DURATION_SECONDS } from '../lib/const';
-import { areEqual } from 'react-window';
 
 interface CountryListElementProps extends VirtualListChildProps<Country[]> {
   messages: AppConfig['Messages']['countries'];
   isComingUp?: boolean;
   isComingDown?: boolean;
   isDeleting?: boolean;
+  onDelete?: () => void;
   onStartDeleteAnimations?: () => void;
 }
 
@@ -27,18 +27,17 @@ export const CountriesListElement: FC<CountryListElementProps> = memo(
     isComingUp,
     isComingDown,
     isDeleting,
+    onDelete,
     onStartDeleteAnimations,
   }) => {
     const country = countries[index];
 
     return (
       <motion.li
+        key={country.iso_code3}
         className={clsx(
-          'flex items-center gap-4 p-4 border-b border-gray-300',
-          {
-            'pointer-events-none': isDeleting,
-            'last:border-b-0': !isDeleting,
-          },
+          'flex items-center gap-4 p-4 border-b last:border-b-0 border-gray-300',
+          { 'pointer-events-none border-none': isDeleting },
         )}
         style={style}
         initial={{ opacity: 1, translateY: 0, translateX: 0 }}
@@ -48,9 +47,10 @@ export const CountriesListElement: FC<CountryListElementProps> = memo(
           opacity: isDeleting ? 0 : 1,
         }}
         transition={{ duration: DELETING_ANIMATION_DURATION_SECONDS }}
+        onAnimationComplete={() => isDeleting && onDelete?.()}
+        onViewportLeave={() => isDeleting && onDelete?.()}
       >
         <CountryFlag
-          key={country.iso_code3}
           className="h-[30px]"
           url={country.flag_url}
           alt={country.name_ru}
@@ -77,7 +77,15 @@ export const CountriesListElement: FC<CountryListElementProps> = memo(
       </motion.li>
     );
   },
-  areEqual,
+  (prevProps, nextProps) => {
+    return (
+      prevProps.data[prevProps.index].iso_code3 ===
+        nextProps.data[nextProps.index].iso_code3 &&
+      prevProps.isComingUp === nextProps.isComingUp &&
+      prevProps.isComingDown === nextProps.isComingDown &&
+      prevProps.isDeleting === nextProps.isDeleting
+    );
+  },
 );
 
 CountriesListElement.displayName = 'CountriesListElement';

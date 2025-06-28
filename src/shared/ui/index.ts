@@ -8,5 +8,6 @@ export { Loader } from './loader';
 export {
   VirtualList,
   VirtualListAutoSizer,
+  type Size,
   type VirtualListChildProps,
 } from './virtual-list';
