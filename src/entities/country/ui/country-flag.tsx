@@ -1,9 +1,9 @@
 import { FC } from 'react';
 
 import { Image } from 'shared/ui';
+import { PropsWithClassName } from 'shared/types/props';
 
-interface CountryFlagProps {
-  className?: string;
+interface CountryFlagProps extends PropsWithClassName {
   url: string;
   alt?: string;
   height?: number;

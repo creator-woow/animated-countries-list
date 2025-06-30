@@ -1,13 +1,12 @@
 import { FC } from 'react';
 
+import { PropsWithClassName } from 'shared/types/props';
 import { getCountriesList } from 'entities/country';
 import { getMessages } from 'shared/lib';
 
 import { CountriesList } from './countries-list';
 
-interface CountriesListContainerProps {
-  className?: string;
-}
+type CountriesListContainerProps = PropsWithClassName;
 
 export const CountriesListContainer: FC<CountriesListContainerProps> = async ({
   className,

@@ -1,12 +1,12 @@
 import { FC, PropsWithChildren } from 'react';
 
+import { PropsWithClassName } from 'shared/types/props';
 import { clsx } from 'shared/lib';
 
-type InformationTextProps = PropsWithChildren<{
-  className?: string;
+interface InformationTextProps extends PropsWithChildren, PropsWithClassName {
   error?: boolean;
   info?: boolean;
-}>;
+}
 
 export const InformationText: FC<InformationTextProps> = ({
   className,

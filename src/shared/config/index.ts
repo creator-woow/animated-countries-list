@@ -1,4 +1,4 @@
-export { LOCALE_PREFIX, SUPPORTED_LOCALES } from './intl';
+export { LOCALE_PREFIX, SUPPORTED_LOCALES, Locale } from './intl';
 export {
   Theme,
   THEMES,

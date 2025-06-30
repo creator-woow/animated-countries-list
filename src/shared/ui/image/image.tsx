@@ -1,8 +1,9 @@
 import { FC } from 'react';
 import NextImage from 'next/image';
 
-interface ImageProps {
-  className?: string;
+import { PropsWithClassName } from 'shared/types/props';
+
+interface ImageProps extends PropsWithClassName {
   width: number;
   height: number;
   src?: string;

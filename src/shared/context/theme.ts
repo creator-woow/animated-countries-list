@@ -10,6 +10,6 @@ interface ThemeContextState {
 }
 
 export const ThemeContext = createContext<ThemeContextState>({
-  theme: Theme.default,
+  theme: Theme.Light,
   setTheme: () => null,
 });

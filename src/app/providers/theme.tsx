@@ -2,25 +2,19 @@
 
 import { FC, PropsWithChildren, useState } from 'react';
 
-import {
-  THEME_ATTRIBUTE_NAME,
-  THEME_COOKIE_NAME,
-  Theme,
-  isValidTheme,
-} from 'shared/config';
-import { getClientCookie, setClientCookie } from 'shared/lib';
+import { THEME_ATTRIBUTE_NAME, THEME_COOKIE_NAME, Theme } from 'shared/config';
 import { ThemeContext } from 'shared/context';
+import { setClientCookie } from 'shared/lib';
 
-export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const activeTheme = getClientCookie(THEME_COOKIE_NAME);
+interface ThemeProviderProps extends PropsWithChildren {
+  initialTheme: Theme;
+}
 
-    if (activeTheme && isValidTheme(activeTheme)) {
-      return activeTheme;
-    }
-
-    return Theme.default;
-  });
+export const ThemeProvider: FC<ThemeProviderProps> = ({
+  children,
+  initialTheme,
+}) => {
+  const [theme, setTheme] = useState<Theme>(initialTheme);
 
   const handleThemeChange = (newTheme: Theme) => {
     setClientCookie(THEME_COOKIE_NAME, newTheme);

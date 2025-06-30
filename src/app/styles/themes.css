@@ -78,6 +78,9 @@
   --color-contour: var(--color-neutral-700);
   --color-skeleton: var(--color-neutral-300);
   --color-placeholder: var(--color-neutral-400);
+  --color-text-primary: #000000;
+
+  --shadow-surface: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.3);
 
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 992px;
@@ -109,8 +112,6 @@
   --radius-xxl: 3rem;
   --radius-full: 100%;
 
-  --shadow-surface: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.3);
-
   --duration-interactive: 0.2s;
   --duration-width: 0.3s;
 
@@ -120,8 +121,29 @@
 }
 
 @layer base {
-  [data-theme='dark'] {
+  [data-theme="dark"] {
+    /* On change of dark theme variables need to copy all variables from this scope to scope under [data-theme='system'] below */
+    --color-site-background: #1f1d1d;
+    --color-surface: #3f3939;
+    --color-text-primary: #ffffff;
 
+    --color-contour: var(--color-neutral-700);
+    --color-placeholder: var(--color-neutral-400);
+
+    --shadow-surface: 0 1.25rem 2.5rem rgba(204, 204, 204, 0.3);
+  }
+
+  [data-theme='system'] {
+    @media (prefers-color-scheme: dark) {
+      --color-site-background: #1f1d1d;
+      --color-surface: #3f3939;
+      --color-text-primary: #ffffff;
+
+      --color-contour: var(--color-neutral-700);
+      --color-placeholder: var(--color-neutral-400);
+
+      --shadow-surface: 0 1.25rem 2.5rem rgba(204, 204, 204, 0.3);
+    }
   }
 }
 

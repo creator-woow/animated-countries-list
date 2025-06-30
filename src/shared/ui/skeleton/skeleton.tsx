@@ -1,6 +1,7 @@
 import { FC, PropsWithChildren } from 'react';
 
 import { VariantProps, tv } from 'shared/lib';
+import { PropsWithClassName } from 'shared/types/props';
 
 export const skeletonVariants = tv({
   base: 'bg-skeleton inline-block w-auto h-auto whitespace-nowrap',
@@ -25,8 +26,8 @@ export const skeletonVariants = tv({
 
 interface SkeletonProps
   extends PropsWithChildren,
+    PropsWithClassName,
     VariantProps<typeof skeletonVariants> {
-  className?: string;
   width?: number | string;
   height?: number | string;
 }

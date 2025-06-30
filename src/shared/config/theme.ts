@@ -1,11 +1,10 @@
 export const enum Theme {
-  light = 'light',
-  dark = 'dark',
-  system = 'system',
-  default = Theme.light,
+  Light = 'light',
+  Dark = 'dark',
+  System = 'system',
 }
 
-export const THEMES = [Theme.light, Theme.dark, Theme.system] as const;
+export const THEMES = [Theme.System, Theme.Light, Theme.Dark] as const;
 
 export const THEME_ATTRIBUTE_NAME = 'data-theme';
 export const THEME_COOKIE_NAME = 'theme';

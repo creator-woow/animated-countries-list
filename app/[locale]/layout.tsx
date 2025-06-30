@@ -5,7 +5,12 @@ import { cookies } from 'next/headers';
 
 import 'app/styles/index.css';
 import { IntlProvider, ThemeProvider } from 'app/providers';
-import { THEME_ATTRIBUTE_NAME, THEME_COOKIE_NAME, Theme } from 'shared/config';
+import {
+  THEME_ATTRIBUTE_NAME,
+  THEME_COOKIE_NAME,
+  Theme,
+  isValidTheme,
+} from 'shared/config';
 import { RoutingDefaultParams } from 'shared/types';
 import { clsx } from 'shared/lib';
 
@@ -28,11 +33,11 @@ const PTSerif = PT_Serif({
 });
 
 const Providers: FC<
-  PropsWithChildren & { locale: AppConfig['Locale'] }
-> = async ({ locale, children }) => {
+  PropsWithChildren & { locale: AppConfig['Locale']; initialTheme: Theme }
+> = async ({ locale, initialTheme, children }) => {
   return (
     <IntlProvider locale={locale}>
-      <ThemeProvider>{children}</ThemeProvider>
+      <ThemeProvider initialTheme={initialTheme}>{children}</ThemeProvider>
     </IntlProvider>
   );
 };
@@ -40,7 +45,11 @@ const Providers: FC<
 const RootLayout: FC<RootLayoutProps> = async ({ params, children }) => {
   const { locale } = await params;
   const cookie = await cookies();
-  const theme = cookie.get(THEME_COOKIE_NAME)?.value ?? Theme.default;
+  const themeCookieValue = cookie.get(THEME_COOKIE_NAME)?.value;
+  const theme =
+    themeCookieValue && isValidTheme(themeCookieValue)
+      ? themeCookieValue
+      : Theme.Light;
 
   const htmlAttributes = {
     lang: locale,
@@ -51,12 +60,17 @@ const RootLayout: FC<RootLayoutProps> = async ({ params, children }) => {
     <html {...htmlAttributes}>
       <body
         className={clsx(
-          'bg-site-background h-[100dvh]',
+          'text-text-primary bg-site-background h-[100dvh]',
           PTSans.variable,
           PTSerif.variable,
         )}
       >
-        <Providers locale={locale}>{children}</Providers>
+        <Providers
+          initialTheme={theme}
+          locale={locale}
+        >
+          {children}
+        </Providers>
       </body>
     </html>
   );

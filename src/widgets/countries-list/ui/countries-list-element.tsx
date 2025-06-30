@@ -36,7 +36,7 @@ export const CountriesListElement: FC<CountryListElementProps> = memo(
       <motion.li
         key={country.iso_code3}
         className={clsx(
-          'flex items-center gap-4 p-4 border-b last:border-b-0 border-gray-300',
+          'flex items-center gap-4 p-4 border-b last:border-b-0 border-gray-300 bg-surface',
           { 'pointer-events-none border-none': isDeleting },
         )}
         style={style}

@@ -2,13 +2,14 @@
 
 import { FC, ReactNode } from 'react';
 
+import { PropsWithClassName } from 'shared/types/props';
+
 interface TagComponentProps {
   content: string;
 }
 
-interface RichTextProps {
+interface RichTextProps extends PropsWithClassName {
   text: string;
-  className?: string;
   tagOverrides: Record<string, (props: TagComponentProps) => ReactNode>;
 }
 

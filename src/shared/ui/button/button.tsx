@@ -10,7 +10,7 @@ export const buttonVariants = tv({
   `,
   variants: {
     variant: {
-      clear: 'bg-transparent p-0 text-inherit',
+      clear: 'bg-transparent border-none text-inherit',
       outlined: 'border-1 border-primary bg-primary',
       primaryFilled:
         'bg-primary-900 text-white font-bold hover:bg-primary-950 focus-visible:bg-primary-950',
@@ -18,6 +18,7 @@ export const buttonVariants = tv({
     size: {
       md: 'py-m px-xl',
       xl: 'py-l px-xxl',
+      content: 'p-0',
     },
     icons: {
       true: 'px-[22px] flex items-center justify-center gap-[10px]',

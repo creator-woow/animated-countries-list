@@ -1,6 +1,11 @@
 import { getRequestConfig } from 'next-intl/server';
 
-export const SUPPORTED_LOCALES = ['en', 'ru'] as const;
+export const enum Locale {
+  English = 'en',
+  Russian = 'ru',
+}
+
+export const SUPPORTED_LOCALES = [Locale.English, Locale.Russian] as const;
 export const LOCALE_PREFIX = 'always' as const;
 
 export default getRequestConfig(async ({ locale, requestLocale }) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { AppConfig } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 
@@ -11,14 +11,14 @@ import {
   VirtualListChildProps,
 } from 'shared/ui';
 import { Country } from 'entities/country';
+import { PropsWithClassName } from 'shared/types/props';
 import { clsx } from 'shared/lib';
 import { useDebouncedCallback } from 'shared/lib/hooks';
 
 import { LIST_ITEM_HEIGHT, SCROLL_INDEX_PARAM_NAME } from '../lib/const';
 import { CountriesListElement } from './countries-list-element';
 
-interface CountriesListProps {
-  className?: string;
+interface CountriesListProps extends PropsWithClassName {
   countries: Country[];
   messages: AppConfig['Messages']['countries'];
 }
@@ -34,6 +34,14 @@ export const CountriesList: FC<CountriesListProps> = ({
   const [deletingCountriesCodes, setDeletingCountriesCodes] = useState<
     string[]
   >([]);
+
+  const deletingIndexes = useMemo(
+    () =>
+      deletingCountriesCodes
+        .map((code) => countries.findIndex((el) => el.iso_code3 === code))
+        .filter((idx) => idx !== -1),
+    [countries, deletingCountriesCodes],
+  );
 
   const initialVisibleIndex = Number(
     searchParams?.get(SCROLL_INDEX_PARAM_NAME) ?? 1,
@@ -85,9 +93,6 @@ export const CountriesList: FC<CountriesListProps> = ({
 
       const countryCode = country.iso_code3;
       const isDeleting = deletingCountriesCodes.includes(countryCode);
-      const deletingIndexes = deletingCountriesCodes
-        .map((code) => countries.findIndex((el) => el.iso_code3 === code))
-        .filter((idx) => idx !== -1);
       const isLastScreenVisible = lastVisibleIndex === countries.length - 1;
 
       return (
@@ -111,9 +116,10 @@ export const CountriesList: FC<CountriesListProps> = ({
       );
     },
     [
-      countries,
+      countries.length,
       deleteItem,
       deletingCountriesCodes,
+      deletingIndexes,
       lastVisibleIndex,
       messages,
       startDeletingAnimations,
